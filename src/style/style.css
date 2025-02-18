@@ -4,7 +4,12 @@
 }
 
 html {
-    background-color: #1e1a20;
+    /*background-color: #1e1a20;*/
+    background-color: #000000;
+}
+
+body {
+    overflow: hidden;
 }
 
 .webgl {
@@ -14,18 +19,41 @@ html {
     outline: none;
 }
 
+.hide {
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+.title {
+    display: block;
+}
+
+.paragraph {
+    font-size: x-large;
+}
+
+.high-light {
+    color: #ffff00;
+}
 
 .section {
-    display: flex;
+    display: none;
     align-items: center;
     height: 100vh;
     position: relative;
     font-family: 'Cabin', sans-serif;
-    color: #ffeded;
-    text-transform: uppercase;
+    color: white;
     font-size: 7vmin;
     padding-left: 10%;
     padding-right: 10%;
+    transition: all 800ms ease;
+}
+
+.section.active {
+    display: flex;
 }
 
 section:nth-child(odd) {
