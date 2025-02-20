@@ -1,29 +1,14 @@
-import {
-    Mesh, MeshStandardMaterial, Object3D, PerspectiveCamera,
-    Scene, Vector3, WebGLRenderer
-} from "three";
-import FollowCamera from "../env/FollowCamera";
-import GUI from "three/examples/jsm/libs/lil-gui.module.min.js";
-import {ColliderDesc, RigidBodyDesc, World} from "@dimforge/rapier3d-compat";
+import {Mesh, MeshStandardMaterial, Object3D, Scene} from "three";
 import {OBJLoader} from "three/examples/jsm/loaders/OBJLoader.js";
 import {MTLLoader} from "three/examples/jsm/loaders/MTLLoader.js";
+import {ColliderDesc, RigidBodyDesc, World} from "@dimforge/rapier3d-compat";
 
-// 여기가 이제 골조가 되는 거임. 이제 여기가 거즘 game.ts 가 되고
 export default class BookShelf {
-    mainMesh!: Mesh;
-    followTarget: Object3D;
-    followCamera: FollowCamera;
-    // cameraPositions = new Vector3(-2, 10, -2.8);
-    cameraPositions = new Vector3(0, 20, 20);
+    mesh!: Mesh;
 
-    constructor(scene: Scene, world:World, camera: PerspectiveCamera, renderer: WebGLRenderer, mainTarget: Object3D, gui: GUI) {
-        this.followTarget = mainTarget;
-        this.followCamera = new FollowCamera(scene, camera, renderer, this.cameraPositions, gui, world);
-    }
+    constructor() {}
 
-    async init(scene: Scene, world:World, camera: PerspectiveCamera, renderer: WebGLRenderer, gui: GUI) {
-        await this.followCamera.init();
-
+    async init(scene: Scene, world: World) {
         const bookShelfMaterial = new MeshStandardMaterial({
             color: 0x000000,
             roughness: 0.8,
@@ -58,9 +43,8 @@ export default class BookShelf {
             }
         })
 
-        this.mainMesh = bookShelfMesh;
-        scene.add(this.mainMesh)
-        scene.add(this.followTarget)
+        this.mesh = bookShelfMesh;
+        scene.add(this.mesh)
 
         const bookShelfBody = world.createRigidBody(
             RigidBodyDesc.fixed()
@@ -96,8 +80,4 @@ export default class BookShelf {
 
         world.createCollider(bookShelfShape, bookShelfBody);
     }
-
-    update(delta: number) {
-        this.followCamera.update(delta);
-    }
-};
+}

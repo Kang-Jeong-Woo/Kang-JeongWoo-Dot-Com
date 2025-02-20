@@ -1,15 +1,17 @@
 import {ColliderDesc, RigidBody, RigidBodyDesc, World} from "@dimforge/rapier3d-compat";
-import {Mesh, Scene, Vector3} from "three";
+import {Mesh, Quaternion, Scene, Vector3} from "three";
 import {OBJLoader} from "three/examples/jsm/loaders/OBJLoader.js";
 import {MTLLoader} from "three/examples/jsm/loaders/MTLLoader.js";
 
 export default class Dice {
     mesh!: Mesh;
     rigidBody!: RigidBody;
+    initPosition!: Vector3;
 
     constructor() {}
 
     async init(scene: Scene, world: World, position: Vector3) {
+        this.initPosition = position;
         const objLoader = new OBJLoader();
         const mtlLoader = new MTLLoader();
 
@@ -55,7 +57,7 @@ export default class Dice {
     }
 
     throw() {
-        const throwStrength = 5;
+        const throwStrength = 1.5;
         const diagonalAngle = Math.PI / 8;
         this.rigidBody.setAngvel({ x: 0, y: 0, z: 0 }, true);
 
@@ -102,5 +104,13 @@ export default class Dice {
     update() {
         this.mesh.position.copy(this.rigidBody.translation());
         this.mesh.quaternion.copy(this.rigidBody.rotation());
+    }
+
+    resetPosition() {
+        this.rigidBody.setTranslation({ x: this.initPosition.x, y: this.initPosition.y, z: this.initPosition.z }, false);
+        this.rigidBody.setRotation(new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI * 90 / 180), false);
+        this.rigidBody.setLinvel({ x: 0, y: 0, z: 0 }, false);
+        this.rigidBody.setAngvel({ x: 0, y: 0, z: 0 }, false);
+        this.rigidBody.sleep();
     }
 }

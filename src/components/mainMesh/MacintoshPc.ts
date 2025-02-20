@@ -26,7 +26,7 @@ export default class MacintoshPc {
         const objectMesh = object.getObjectByName("Object_9") as Mesh;
 
         const scale = 0.3;
-        const rotationY = -Math.PI * 30 / 180;
+        const rotationY = Math.PI * 45 / 180;
 
         objectMesh.traverse((child:Object3D)=>{
             if (child instanceof Mesh) {
@@ -51,7 +51,7 @@ export default class MacintoshPc {
             .setTranslation(-0.15, 0.08, 0)
             .setMass(1)
             .setRestitution(0)
-            .setFriction(0)
+            .setFriction(5)
             .setSensor(false);
 
         this.mesh = objectMesh;

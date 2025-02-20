@@ -4,7 +4,6 @@ import {
     Raycaster, Scene, TextureLoader,
     Vector2, Vector3, WebGLRenderer
 } from "three";
-import {RigidBody, World} from "@dimforge/rapier3d-compat";
 import {OBJLoader} from "three/examples/jsm/loaders/OBJLoader.js";
 import {MTLLoader} from "three/examples/jsm/loaders/MTLLoader.js";
 import gsap from "gsap";
@@ -12,9 +11,7 @@ import gsap from "gsap";
 export default class CoinChart {
     position: Vector3;
     mesh!: Mesh;
-    rigidBody!: RigidBody;
     meshes: Mesh[] = [];
-    rigidBodies: RigidBody[] = [];
     objectName: Array<string> = ["Arrow", "Coin", "BigCoin", "MidCoin", "Cube.008", "Chart"];
     camera: PerspectiveCamera;
     renderer: WebGLRenderer;
@@ -31,7 +28,7 @@ export default class CoinChart {
         this.prevMouse = new Vector2(0, 0);
     }
 
-    async init(scene: Scene, world: World) {
+    async init(scene: Scene) {
         const textureLoader = new TextureLoader();
         const gradientTexture = await textureLoader.loadAsync("textures/gradients/5.jpg");
         gradientTexture.magFilter = NearestFilter;

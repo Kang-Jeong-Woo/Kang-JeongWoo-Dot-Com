@@ -25,6 +25,7 @@ export default class Awards {
 
         let i = 0;
         for (const objectMesh of cubeMeshes) {
+            objectMesh.castShadow = true;
             objectMesh.traverse((child: Object3D) => {
                 if (child instanceof Mesh) {
                     child.position.copy(this.position);
@@ -35,7 +36,7 @@ export default class Awards {
 
             const createdRigidBody = world.createRigidBody(
                 RigidBodyDesc.dynamic()
-                    .setTranslation(this.position.x + i * 0.1, this.position.y, this.position.z)
+                    .setTranslation(this.position.x + i * 0.5, this.position.y, this.position.z)
                     .setCanSleep(false)
                     .setLinearDamping(1)
                     .setAngularDamping(1)

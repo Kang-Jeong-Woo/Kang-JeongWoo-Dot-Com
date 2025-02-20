@@ -26,14 +26,14 @@ export default class MonsterTruck {
 
     constructor(keyMap: { [key: string]: boolean }, position: Vector3) {
         this.keyMap = keyMap
-        this.lightLeftTarget.position.set(-0.35, 1, -10)
-        this.lightRightTarget.position.set(0.35, 1, -10)
+        this.lightLeftTarget.position.set(-0.2, -1, 1)
+        this.lightRightTarget.position.set(0.2, -1, 1)
         this.initPosition = position;
     }
 
     async init(scene: Scene, world: World) {
-        const scale = 0.01;
-        const wheelScale = 0.016;
+        const scale = 0.005;
+        const wheelScale = 0.008;
         const gltfLoader = new GLTFLoader();
         const gltf = await gltfLoader.loadAsync("3dModel/monster_truck/monster_truck.glb");
         const object = gltf.scene.getObjectByName("vehicle-monster-truck");
@@ -64,21 +64,21 @@ export default class MonsterTruck {
                     .setRotation(new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI * 90 / 180))
                     .setCanSleep(false)
                     .setCanSleep(false)
-                    .setLinearDamping(0.5)
-                    .setAngularDamping(0.5)
+                    .setLinearDamping(1)
+                    .setAngularDamping(1)
             );
 
             const wheelBLBody = world.createRigidBody(
                 RigidBodyDesc.dynamic()
-                    .setTranslation(this.initPosition.x-0.3, this.initPosition.y, this.initPosition.z+0.3)
+                    .setTranslation(this.initPosition.x-0.15, this.initPosition.y, this.initPosition.z+0.15)
                     .setCanSleep(false)
                     .setCanSleep(false)
-                    .setLinearDamping(0.5)
-                    .setAngularDamping(0.5)
+                    .setLinearDamping(1)
+                    .setAngularDamping(1)
             );
             const wheelBRBody = world.createRigidBody(
                 RigidBodyDesc.dynamic()
-                    .setTranslation(this.initPosition.x+0.3, this.initPosition.y, this.initPosition.z+0.3)
+                    .setTranslation(this.initPosition.x+0.15, this.initPosition.y, this.initPosition.z+0.15)
                     .setCanSleep(false)
                     .setCanSleep(false)
                     .setLinearDamping(0.5)
@@ -87,14 +87,14 @@ export default class MonsterTruck {
 
             const wheelFLBody = world.createRigidBody(
                 RigidBodyDesc.dynamic()
-                    .setTranslation(this.initPosition.x-0.3, this.initPosition.y, this.initPosition.z-0.3)
+                    .setTranslation(this.initPosition.x-0.15, this.initPosition.y, this.initPosition.z-0.15)
                     .setCanSleep(false)
                     .setLinearDamping(0.5)
                     .setAngularDamping(0.5)
             )
             const wheelFRBody = world.createRigidBody(
                 RigidBodyDesc.dynamic()
-                    .setTranslation(this.initPosition.x+0.3, this.initPosition.y, this.initPosition.z-0.3)
+                    .setTranslation(this.initPosition.x+0.15, this.initPosition.y, this.initPosition.z-0.15)
                     .setCanSleep(false)
                     .setLinearDamping(0.5)
                     .setAngularDamping(0.5)
@@ -102,12 +102,12 @@ export default class MonsterTruck {
 
             const axelFLBody = world.createRigidBody(
                 RigidBodyDesc.dynamic()
-                    .setTranslation(this.initPosition.x-0.3, this.initPosition.y, this.initPosition.z-0.3)
+                    .setTranslation(this.initPosition.x-0.15, this.initPosition.y, this.initPosition.z-0.15)
                     .setCanSleep(false)
             )
             const axelFRBody = world.createRigidBody(
                 RigidBodyDesc.dynamic()
-                    .setTranslation(this.initPosition.x+0.3, this.initPosition.y, this.initPosition.z-0.3)
+                    .setTranslation(this.initPosition.x+0.15, this.initPosition.y, this.initPosition.z-0.15)
                     .setCanSleep(false)
             )
 
@@ -131,41 +131,41 @@ export default class MonsterTruck {
                 .setRestitution(0.2)
                 .setFriction(5.0)
                 .setCollisionGroups(131073)
-            const wheelBLShape = ColliderDesc.cylinder(0.1, 0.3)
+            const wheelBLShape = ColliderDesc.cylinder(0.05, 0.15)
                 .setRotation(new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), -Math.PI / 2))
                 .setRestitution(0.2)
                 .setFriction(5.0)
                 .setCollisionGroups(262145)
-            const wheelBRShape = ColliderDesc.cylinder(0.1, 0.3)
+            const wheelBRShape = ColliderDesc.cylinder(0.05, 0.15)
                 .setRotation(new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2))
                 .setRestitution(0.2)
                 .setFriction(5.0)
                 .setCollisionGroups(262145)
-            const wheelFLShape = ColliderDesc.cylinder(0.1, 0.3)
+            const wheelFLShape = ColliderDesc.cylinder(0.05, 0.15)
                 .setRotation(new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2))
                 .setRestitution(0.2)
                 .setFriction(5.0)
                 .setCollisionGroups(262145)
-            const wheelFRShape = ColliderDesc.cylinder(0.1, 0.3)
+            const wheelFRShape = ColliderDesc.cylinder(0.05, 0.15)
                 .setRotation(new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2))
                 .setRestitution(0.2)
                 .setFriction(5.0)
                 .setCollisionGroups(262145)
-            const axelFLShape = ColliderDesc.cuboid(0.05, 0.05, 0.05)
+            const axelFLShape = ColliderDesc.cuboid(0.025, 0.025, 0.025)
                 .setRotation(new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2))
                 .setMass(0.1)
                 .setCollisionGroups(524288)
-            const axelFRShape = ColliderDesc.cuboid(0.05, 0.05, 0.05)
+            const axelFRShape = ColliderDesc.cuboid(0.025, 0.025, 0.025)
                 .setRotation(new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2))
                 .setMass(0.1)
                 .setCollisionGroups(524288)
 
-            this.wheelBLMotor = world.createImpulseJoint(JointData.revolute(new Vector3(-0.3, 0.3, 0), new Vector3(0, 0, 0), new Vector3(-1, 0, 0)), this.carBody, wheelBLBody, true)
-            this.wheelBRMotor = world.createImpulseJoint(JointData.revolute(new Vector3(0.3, 0.3, 0), new Vector3(0, 0, 0), new Vector3(-1, 0, 0)), this.carBody, wheelBRBody, true)
+            this.wheelBLMotor = world.createImpulseJoint(JointData.revolute(new Vector3(-0.15, 0.15, 0), new Vector3(0, 0, 0), new Vector3(-1, 0, 0)), this.carBody, wheelBLBody, true)
+            this.wheelBRMotor = world.createImpulseJoint(JointData.revolute(new Vector3(0.15, 0.15, 0), new Vector3(0, 0, 0), new Vector3(-1, 0, 0)), this.carBody, wheelBRBody, true)
 
-            this.wheelFLAxel = world.createImpulseJoint(JointData.revolute(new Vector3(-0.3, -0.3, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 1)), this.carBody, axelFLBody, true)
+            this.wheelFLAxel = world.createImpulseJoint(JointData.revolute(new Vector3(-0.15, -0.15, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 1)), this.carBody, axelFLBody, true)
             ;(this.wheelFLAxel as PrismaticImpulseJoint).configureMotorModel(MotorModel.ForceBased)
-            this.wheelFRAxel = world.createImpulseJoint(JointData.revolute(new Vector3(0.3, -0.3, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 1)), this.carBody, axelFRBody, true)
+            this.wheelFRAxel = world.createImpulseJoint(JointData.revolute(new Vector3(0.15, -0.15, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 1)), this.carBody, axelFRBody, true)
             ;(this.wheelFRAxel as PrismaticImpulseJoint).configureMotorModel(MotorModel.ForceBased)
 
             world.createImpulseJoint(JointData.revolute(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(1, 0, 0)), axelFLBody, wheelFLBody, true)
@@ -206,15 +206,15 @@ export default class MonsterTruck {
             lensflareRight.addElement(new LensflareElement(textureFlare3, 62.5, 0.4))
 
             const headLightLeft = new SpotLight(undefined, Math.PI * 20)
-            headLightLeft.position.set(-0.4, 0.5, -1.01)
-            headLightLeft.angle = Math.PI / 4
+            headLightLeft.position.set(0.2, 1, 1)
+            headLightLeft.angle = Math.PI / 8
             headLightLeft.penumbra = 0.5
             headLightLeft.castShadow = true
             headLightLeft.shadow.blurSamples = 10
             headLightLeft.shadow.radius = 5
 
             const headLightRight = headLightLeft.clone()
-            headLightRight.position.set(0.4, 0.5, -1.01)
+            headLightRight.position.set(0.2, 1, 1)
 
             carMesh.add(headLightLeft)
             headLightLeft.target = this.lightLeftTarget
@@ -255,10 +255,10 @@ export default class MonsterTruck {
 
         let targetSteer = 0
         if (this.keyMap['KeyD']) {
-            targetSteer += 0.6
+            targetSteer += 0.3
         }
         if (this.keyMap['KeyA']) {
-            targetSteer -= 0.6
+            targetSteer -= 0.3
         }
 
         ;(this.wheelFLAxel as PrismaticImpulseJoint).configureMotorPosition(targetSteer, 100, 10)
@@ -274,12 +274,12 @@ export default class MonsterTruck {
         this.carBody.setAngvel({ x: 0, y: 0, z: 0 }, false);
 
         const wheelPositions = [
-            { x: this.initPosition.x-0.3, y: this.initPosition.y, z: this.initPosition.z+0.3 },
-            { x: this.initPosition.x+0.3, y: this.initPosition.y, z: this.initPosition.z+0.3 },
-            { x: this.initPosition.x-0.3, y: this.initPosition.y, z: this.initPosition.z-0.3 },
-            { x: this.initPosition.x+0.3, y: this.initPosition.y, z: this.initPosition.z-0.3 },
-            { x: this.initPosition.x-0.3, y: this.initPosition.y, z: this.initPosition.z-0.3 },
-            { x: this.initPosition.x+0.3, y: this.initPosition.y, z: this.initPosition.z-0.3 }
+            { x: this.initPosition.x-0.15, y: this.initPosition.y, z: this.initPosition.z+0.15 },
+            { x: this.initPosition.x+0.15, y: this.initPosition.y, z: this.initPosition.z+0.15 },
+            { x: this.initPosition.x-0.15, y: this.initPosition.y, z: this.initPosition.z-0.15 },
+            { x: this.initPosition.x+0.15, y: this.initPosition.y, z: this.initPosition.z-0.15 },
+            { x: this.initPosition.x-0.15, y: this.initPosition.y, z: this.initPosition.z-0.15 },
+            { x: this.initPosition.x+0.15, y: this.initPosition.y, z: this.initPosition.z-0.15 }
         ];
 
         for (let i = 1; i < this.dynamicBodies.length; i++) {

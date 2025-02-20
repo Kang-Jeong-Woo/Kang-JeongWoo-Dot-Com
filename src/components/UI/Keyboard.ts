@@ -1,9 +1,7 @@
-import { WebGLRenderer } from 'three/src/Three.js'
-
 export default class Keyboard {
     keyMap: { [key: string]: boolean } = {}
 
-    constructor(renderer: WebGLRenderer) {
+    constructor() {
         document.addEventListener('keydown', this.onDocumentKey)
         document.addEventListener('keyup', this.onDocumentKey)
     }

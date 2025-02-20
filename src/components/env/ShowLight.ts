@@ -1,52 +1,110 @@
-import {AmbientLight, Scene, SpotLight, SpotLightHelper} from "three";
+import {Scene, SpotLight, SpotLightHelper, Vector3} from "three";
 import GUI from "three/examples/jsm/libs/lil-gui.module.min.js";
+import {ILightsProperties} from "../interfaces/ILightsProperties.ts";
+import {gsap} from "gsap";
 
 export default class ShowLight {
-    private lights: { light: SpotLight; helper: SpotLightHelper }[] = [];
-    private readonly initialPositions = [
-        [-1.5, 13.5, 0],
-        [-1.9, 11.5, 0.2], [0, 11.5, 0.2], [2, 9.5, 0],
-        [0, 9.5, 0], [-2, 7.1, 0], [0, 7.1, 0],
-        [2, 4.7, 0]
+    private lights: {
+        light: SpotLight;
+        helper: SpotLightHelper;
+        targetOffset: Vector3;
+    }[] = [];
+    private readonly initialPositions: Array<ILightsProperties> = [
+        {
+            position: new Vector3(-1.7, 13.8, 0.6), target: new Vector3(0, -0.3, -0.1),
+            distance: 2.6, decay: 0, angle: 0.4, penumbra: 0.1, intensity: Math.PI * 100
+        },
+        {
+            position: new Vector3(-1.9, 11.1, 1.2), target: new Vector3(0, -1, -0.9),
+            distance: 2.6, decay: 0, angle: 0.351, penumbra: 0.1, intensity: 8
+        },
+        {
+            position: new Vector3(0, 11.5, 0.4), target: new Vector3(0, -1, -0.2),
+            distance: 2.6, decay: 0, angle: 0.4, penumbra: 0.1, intensity: 50
+        },
+        {
+            position: new Vector3(2, 9.5, 0), target: new Vector3(0, -1, 0),
+            distance: 2.6, decay: 0, angle: 0.4, penumbra: 0.1, intensity: Math.PI * 100
+        },
+        {
+            position: new Vector3(0, 9.5, 0), target: new Vector3(0, -1, 0),
+            distance: 2.6, decay: 0, angle: 0.4, penumbra: 0.1, intensity: Math.PI * 100
+        },
+        {
+            position: new Vector3(-3.2, 5.9, 0), target: new Vector3(1.8, -1, 0),
+            distance: 2.32, decay: 0, angle: 0.4, penumbra: 0.08, intensity: Math.PI * 100
+        },
+        {
+            position: new Vector3(0, 7.1, 0), target: new Vector3(0, -1, 0),
+            distance: 2.6, decay: 0, angle: 0.4, penumbra: 0.1, intensity: 80
+        },
+        {
+            position: new Vector3(2, 4.7, 0), target: new Vector3(0, -1, 0),
+            distance: 2.6, decay: 0, angle: 0.36, penumbra: 0.1, intensity: Math.PI * 100
+        },
     ];
-    private debugLight: AmbientLight;
 
     constructor(scene: Scene, gui: GUI) {
         this.setupLights(scene);
-        this.setupGUI(gui);
-        this.debugLight = new AmbientLight("#d3d3d3", Math.PI * 0.2);
-        scene.add(this.debugLight);
+        // this.setupGUI(gui);
+        this.setupAnimation();
+    }
+
+    private setupAnimation() {
+        const firstLight = this.lights[0];
+        if (firstLight) {
+            gsap.to(firstLight.targetOffset, {
+                x: 0.1,
+                duration: 2,
+                ease: "power1.inOut",
+                yoyo: true,
+                repeat: -1,
+                onUpdate: () => {
+                    const { x, y, z } = firstLight.light.position;
+                    const offset = firstLight.targetOffset;
+                    firstLight.light.target.position.set(
+                        x + offset.x,
+                        y + offset.y,
+                        z + offset.z
+                    );
+                    firstLight.helper.update();
+                }
+            });
+        }
     }
 
     private setupLights(scene: Scene) {
-        this.initialPositions.forEach(([x, y, z]) => {
-            const light = new SpotLight('#d3d3d3', Math.PI * 100);
-            light.position.set(x, y, z);
+        this.initialPositions.forEach((props) => {
+            const light = new SpotLight('#d3d3d3', props.intensity);
 
-            light.distance = 2.6
-            light.decay = 0
-            light.angle = 0.4
-            light.penumbra = 0.1
+            light.shadow.mapSize.width = 1024;
+            light.shadow.mapSize.height = 1024;
 
-            // light.angle = 0.5;
-            // light.distance = 3;
-            // light.penumbra = 0.3;
-            // light.decay = 1;
+            light.position.copy(props.position);
 
-            light.target.position.set(x, y - 1, z);
+            light.distance = props.distance;
+            light.decay = props.decay;
+            light.angle = props.angle;
+            light.penumbra = props.penumbra;
+
+            const targetOffset = props.target;
+            light.target.position.set(
+                props.position.x + targetOffset.x,
+                props.position.y + targetOffset.y,
+                props.position.z + targetOffset.z
+            );
             scene.add(light.target);
 
             light.castShadow = true;
-
             light.shadow.mapSize.set(1024, 1024);
             light.shadow.camera.far = 15;
             light.shadow.camera.near = 1;
 
             const helper = new SpotLightHelper(light);
 
-            this.lights.push({ light, helper });
+            this.lights.push({light, helper, targetOffset});
             scene.add(light);
-            scene.add(helper);
+            // scene.add(helper);
         });
     }
 
@@ -62,7 +120,7 @@ export default class ShowLight {
         lightFolder.add(globalControls, 'intensity', 0, 1, 0.1)
             .name('Global Intensity')
             .onChange((value: number) => {
-                this.lights.forEach(({ light }) => {
+                this.lights.forEach(({light}) => {
                     light.intensity = value;
                 });
             });
@@ -70,7 +128,7 @@ export default class ShowLight {
         lightFolder.add(globalControls, 'visible')
             .name('Show Lights')
             .onChange((value: boolean) => {
-                this.lights.forEach(({ light }) => {
+                this.lights.forEach(({light}) => {
                     light.visible = value;
                 });
             });
@@ -78,61 +136,84 @@ export default class ShowLight {
         lightFolder.add(globalControls, 'helpers')
             .name('Show Helpers')
             .onChange((value: boolean) => {
-                this.lights.forEach(({ helper }) => {
+                this.lights.forEach(({helper}) => {
                     helper.visible = value;
                 });
             });
 
-        this.lights.forEach(({ light, helper }, index) => {
+        this.lights.forEach((lightData, index) => {
+            const {light, helper, targetOffset} = lightData;
             const individualFolder = lightFolder.addFolder(`Light ${index + 1}`);
 
-            const updatePosition = () => {
-                const { x, y, z } = light.position;
-                light.target.position.set(x, y - 1, z);
+            const updateTargetPosition = () => {
+                const {x, y, z} = light.position;
+                light.target.position.set(
+                    x + targetOffset.x,
+                    y + targetOffset.y,
+                    z + targetOffset.z
+                );
+                helper.update();
             };
 
-            individualFolder.add(light.position, 'x', -5, 5, 0.1)
-                .name('Position X')
-                .onChange(updatePosition);
-            individualFolder.add(light.position, 'y', 0, 15, 0.1)
-                .name('Position Y')
-                .onChange(updatePosition);
-            individualFolder.add(light.position, 'z', -10, 10, 0.1)
-                .name('Position Z')
-                .onChange(updatePosition);
+            // Position controls
+            const positionFolder = individualFolder.addFolder('Position');
+            positionFolder.add(light.position, 'x', -5, 5, 0.1)
+                .name('X')
+                .onChange(updateTargetPosition);
+            positionFolder.add(light.position, 'y', 0, 15, 0.1)
+                .name('Y')
+                .onChange(updateTargetPosition);
+            positionFolder.add(light.position, 'z', -10, 10, 0.1)
+                .name('Z')
+                .onChange(updateTargetPosition);
 
-            individualFolder.add(light, 'distance', 0, 20).onChange(() => {
-                helper.update()
-            })
-            individualFolder.add(light, 'decay', 0, 10).onChange(() => {
-                helper.update()
-            })
-            individualFolder.add(light, 'angle', 0, 1).onChange(() => {
-                helper.update()
-            })
-            individualFolder.add(light, 'penumbra', 0, 1, 0.001).onChange(() => {
-                helper.update()
-            })
-            individualFolder.add(helper, 'visible').name('Helper Visible')
-            individualFolder.addColor(
-                { color: '#ffffff' },
+            // Target controls
+            const targetFolder = individualFolder.addFolder('Target');
+            targetFolder.add(targetOffset, 'x', -5, 5, 0.1)
+                .name('Target Offset X')
+                .onChange(updateTargetPosition);
+            targetFolder.add(targetOffset, 'y', -10, 10, 0.1)
+                .name('Target Offset Y')
+                .onChange(updateTargetPosition);
+            targetFolder.add(targetOffset, 'z', -5, 5, 0.1)
+                .name('Target Offset Z')
+                .onChange(updateTargetPosition);
+
+            // Light properties
+            const propertiesFolder = individualFolder.addFolder('Properties');
+            propertiesFolder.add(light, 'distance', 0, 20)
+                .onChange(() => helper.update());
+            propertiesFolder.add(light, 'decay', 0, 10)
+                .onChange(() => helper.update());
+            propertiesFolder.add(light, 'angle', 0, 1)
+                .onChange(() => helper.update());
+            propertiesFolder.add(light, 'penumbra', 0, 1, 0.001)
+                .onChange(() => helper.update());
+            propertiesFolder.add(helper, 'visible').name('Helper Visible');
+            propertiesFolder.addColor(
+                {color: '#ffffff'},
                 'color'
             ).onChange((value: string) => {
                 light.color.set(value);
             });
-            individualFolder.add(light, 'intensity', 0, 1, 0.1)
+            propertiesFolder.add(light, 'intensity', 0, 314, 0.1)
                 .name('Intensity');
+
+            individualFolder.close();
+            positionFolder.close();
+            targetFolder.close();
+            propertiesFolder.close();
         });
     }
 
     update() {
-        this.lights.forEach(({ helper }) => {
+        this.lights.forEach(({helper}) => {
             helper.update();
         });
     }
 
     dispose(scene: Scene) {
-        this.lights.forEach(({ light, helper }) => {
+        this.lights.forEach(({light, helper}) => {
             scene.remove(light.target);
             scene.remove(light);
             scene.remove(helper);

@@ -1,4 +1,4 @@
-import {Mesh, Scene, Vector3} from "three";
+import {Mesh, Quaternion, Scene, Vector3} from "three";
 import {ColliderDesc, RigidBody, RigidBodyDesc, World} from "@dimforge/rapier3d-compat";
 import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader.js";
 
@@ -6,10 +6,12 @@ export default class Yut {
     objectName: Array<string> = ["asd_1_phong4_0", "asd_2_phong5_0"];
     meshes: Array<Mesh> = [];
     rigidBodies: Array<RigidBody> = [];
+    initPosition!: Vector3;
 
     constructor() {}
 
     async init(scene: Scene, world: World, position: Vector3) {
+        this.initPosition = position;
         const gltfLoader = new GLTFLoader();
         const gltf = await gltfLoader.loadAsync("3dModel/yut/yut.gltf");
         const model = gltf.scene;
@@ -52,7 +54,7 @@ export default class Yut {
 
     throw() {
         for (let i = 0; i < this.objectName.length; i++) {
-            const throwStrength = 5;
+            const throwStrength = 1.5;
             const diagonalAngle = Math.PI / 8;
             this.rigidBodies[i].setAngvel({ x: 0, y: 0, z: 0 }, true);
 
@@ -102,6 +104,16 @@ export default class Yut {
         for (let i = 0; i < this.objectName.length; i++) {
             this.meshes[i].position.copy(this.rigidBodies[i].translation());
             this.meshes[i].quaternion.copy(this.rigidBodies[i].rotation());
+        }
+    }
+
+    resetPosition() {
+        for (let i = 0; i < this.objectName.length; i++) {
+            this.rigidBodies[i].setTranslation({ x: this.initPosition.x, y: this.initPosition.y, z: this.initPosition.z }, false);
+            this.rigidBodies[i].setRotation(new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), Math.PI * 90 / 180), false);
+            this.rigidBodies[i].setLinvel({ x: 0, y: 0, z: 0 }, false);
+            this.rigidBodies[i].setAngvel({ x: 0, y: 0, z: 0 }, false);
+            this.rigidBodies[i].sleep();
         }
     }
 }

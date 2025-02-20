@@ -63,8 +63,8 @@ export default class MotionDesk {
         const thoughtFaceShape = ColliderDesc.cuboid(0.4, 0.27, 0.2)
             .setTranslation(0, 0.14, 0)
             .setMass(1)
-            .setRestitution(1)
-            .setFriction(1)
+            .setRestitution(0)
+            .setFriction(5)
             .setSensor(false);
 
         this.mesh = motionDeskMesh;
